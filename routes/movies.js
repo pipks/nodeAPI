@@ -85,7 +85,6 @@ router.delete('/:movie_id', (req, res, next) => {
 //created new movie 
 router.post('/', (req, res, next) => {
 
-
   const movie = new Movie(req.body);
   const promise = movie.save();
 
