@@ -15,6 +15,15 @@ router.get('/', (req, res) => {
   });
 });
 
+//movie details
+router.get('/:movie_id', (req, res) => {
+  const promise = Movie.findById(req.params.movie_id);
+  promise.then((data) => {
+    res.json(data);
+  }).catch((err) => {
+    res.json(err);
+  });
+});
 
 //created new movie 
 router.post('/', (req, res, next) => {
@@ -28,12 +37,13 @@ router.post('/', (req, res, next) => {
   });
 
   const promise = movie.save();
-
   promise.then((data) => {
     res.json(data)
   }).catch(() => {
     res.json(err)
   });
 });
+
+
 
 module.exports = router;
