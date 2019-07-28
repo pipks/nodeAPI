@@ -25,7 +25,7 @@ router.get('/top10', (req, res) => {
   });
 });
 
-//listed top10 movies endpoint
+//listed between two date movies endpoint
 router.get('/between/:start_year/:end_year', (req, res) => {
   const {start_year, end_year} = req.params;
   const promise = Movie.find(
