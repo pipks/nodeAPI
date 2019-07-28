@@ -27,6 +27,24 @@ router.get('/:movie_id', (req, res, next) => {
   });
 });
 
+//movie updates
+router.put('/:movie_id', (req, res, next) => {
+  const promise = Movie.findByIdAndUpdate(
+      req.params.movie_id, 
+      req.body,
+      { //kayıt sonrasında dönen datanın yeni data olmasını sağladık
+        new: true
+      }
+    );
+  promise.then((data) => {
+    if(!data)
+      next({ message : 'The movie was not found.' })
+    res.json(data);
+  }).catch((err) => {
+    res.json(err);
+  });
+});
+
 //created new movie 
 router.post('/', (req, res, next) => {
   const {title, imdb_score, category, country, year} = req.body;
