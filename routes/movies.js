@@ -45,6 +45,18 @@ router.put('/:movie_id', (req, res, next) => {
   });
 });
 
+//delete movie
+router.delete('/:movie_id', (req, res, next) => {
+  const promise = Movie.findByIdAndRemove(req.params.movie_id);
+  promise.then((data) => {
+    if(!data)
+      next({ message : 'The movie was not found.' })
+    res.json(data);
+  }).catch((err) => {
+    res.json(err);
+  });
+});
+
 //created new movie 
 router.post('/', (req, res, next) => {
   const {title, imdb_score, category, country, year} = req.body;
