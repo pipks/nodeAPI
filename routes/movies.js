@@ -16,9 +16,11 @@ router.get('/', (req, res) => {
 });
 
 //movie details
-router.get('/:movie_id', (req, res) => {
+router.get('/:movie_id', (req, res, next) => {
   const promise = Movie.findById(req.params.movie_id);
   promise.then((data) => {
+    if(!data)
+      next({ message : 'The movie was not found.' })
     res.json(data);
   }).catch((err) => {
     res.json(err);
