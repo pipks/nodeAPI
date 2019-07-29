@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
@@ -19,8 +20,27 @@ router.post('/', (req, res) => {
 
 //listed all directors and movies
 router.get('/', (req, res) => {
+    
+    const promise = Director.find({ });
+
+    promise.then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json(err);
+    });
+});
+
+//director details endpoints
+
+router.get('/:director_id', (req, res) => {
     //join işlemi yapacağımız için promisi böyle oluşturduk
     const promise = Director.aggregate([
+        {
+			$match: { //match ile _id değeri request ile gelen id eşit olan veriyi çektik.
+                '_id': mongoose.Types.ObjectId(req.params.director_id), 
+                //veriyi ObjectId formatına çevirmek için mongoose den faydalandık.
+			}
+		},
         {
             $lookup: { //join için bir döngü oluşturduk
                 from: 'movies', //sorgulanacak collections adı
@@ -49,7 +69,7 @@ router.get('/', (req, res) => {
             }
         },
         {
-            $project: {
+            $project: {// group ile aldığımız verilerin gösterimini bu adamla düzenliyoruz.
                 _id: '$_id._id',
                 name: '$_id.name',
                 surname: '$_id.surname',
