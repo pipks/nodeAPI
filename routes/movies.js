@@ -7,7 +7,54 @@ const Movie = require('../models/Movie');
 
 //listed all movies endpoint
 router.get('/', (req, res) => {
-  const promise = Movie.find({ });
+  //const promise = Movie.find({ });
+
+  const promise = Movie.aggregate([
+    {
+      $lookup: { //join için bir döngü oluşturduk
+        from: 'directors', //sorgulanacak collections adı
+        localField: 'director_id', // localde bulunan _id değerini
+        foreignField: '_id', //colectionda bulunan director_id ile eşleştir.
+        as: 'theDirector', //eşleşen değeri movies olarak ata.
+      }
+    },
+    {
+      $unwind: { //lookup sonucunda oluşan veriyi burda alıyoruz.
+        path: '$theDirector',
+        preserveNullAndEmptyArrays: true,
+      }
+    },
+    {
+      $group: {
+        _id: {
+          _id: '$_id',
+          title: '$title',
+          category:'$category',
+          country: '$country',
+          year: '$year',
+          imdb_score: '$imdb_score',
+          director_name: {
+            _id: '$theDirector._id',
+           name: '$theDirector.name',
+           surname: '$theDirector.surname'
+          }
+        }
+      }
+    },
+
+    {
+      $project: {// group ile aldığımız verilerin gösterimini bu adamla düzenliyoruz.
+          _id: '$_id._id',
+          title: '$_id.title',
+          category:'$_id.category',
+          country: '$_id.country',
+          year: '$_id.year',
+          imdb_score: '$_id.imdb_score',
+          director: '$_id.director_name',
+      }
+  }
+  ]);
+
   promise.then((data) => {
     res.json(data);
   }).catch((err) => {

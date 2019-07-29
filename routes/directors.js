@@ -22,7 +22,6 @@ router.post('/', (req, res) => {
 router.get('/', (req, res) => {
     
     const promise = Director.find({ });
-
     promise.then((data) => {
         res.json(data);
     }).catch((err) => {
@@ -31,7 +30,6 @@ router.get('/', (req, res) => {
 });
 
 //director details endpoints
-
 router.get('/:director_id', (req, res) => {
     //join işlemi yapacağımız için promisi böyle oluşturduk
     const promise = Director.aggregate([
@@ -64,7 +62,14 @@ router.get('/:director_id', (req, res) => {
                     bio: '$bio',
                 },
                 movies: { //yönetmene ait bütün filmleri liste halinde gösterelim.
-                    $push: '$allMovies'
+                  $push: {
+                    _id: '$allMovies._id',
+                    title: '$allMovies.title',
+                    category: '$allMovies.category',
+                    country: '$allMovies.country',
+                    year: '$allMovies.year',
+                    imdb_score: '$allMovies.imdb_score',
+                  }
                 }
             }
         },
@@ -85,4 +90,41 @@ router.get('/:director_id', (req, res) => {
         res.json(err);
     });
 });
+
+//director updates
+router.put('/:director_id', (req, res, next) => {
+    const promise = Movie.findByIdAndUpdate(
+        req.params.director_id, 
+        req.body,
+        { //kayıt sonrasında dönen datanın yeni data olmasını sağladık
+          new: true
+        }
+      );
+    promise.then((data) => {
+      if(!data)
+        next({ message : 'The director was not found.' })
+      res.json(data);
+    }).catch((err) => {
+      res.json(err);
+    });
+  });
+
+
+  //director delete
+router.put('/:director_id', (req, res, next) => {
+    const promise = Movie.findByIdAndRemove(
+        req.params.director_id, 
+        req.body,
+        { //kayıt sonrasında dönen datanın yeni data olmasını sağladık
+          new: true
+        }
+      );
+    promise.then((data) => {
+      if(!data)
+        next({ message : 'The director was not found.' })
+      res.json(data);
+    }).catch((err) => {
+      res.json(err);
+    });
+  });
   module.exports = router;
