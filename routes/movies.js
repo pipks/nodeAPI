@@ -33,7 +33,7 @@ router.get('/', (req, res) => {
           country: '$country',
           year: '$year',
           imdb_score: '$imdb_score',
-          director_name: {
+          director: {
             _id: '$theDirector._id',
            name: '$theDirector.name',
            surname: '$theDirector.surname'
@@ -50,9 +50,9 @@ router.get('/', (req, res) => {
           country: '$_id.country',
           year: '$_id.year',
           imdb_score: '$_id.imdb_score',
-          director: '$_id.director_name',
+          director: '$_id.director',
       }
-  }
+    }
   ]);
 
   promise.then((data) => {

@@ -10,8 +10,7 @@ const directorsRouter = require('./routes/directors');
 
 const app = express();
 
-//db connections
-
+//db connect
 const db = require('./helper/db')();
 
 // view engine setup
