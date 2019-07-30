@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 //Models
 const User = require('../models/User');
@@ -10,6 +11,12 @@ const User = require('../models/User');
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
+
+//json function
+
+function jsonMessage(status, message){
+  return {status,message};
+};
 
 /* GET home page. */
 router.post('/register', (req, res, next) => {
@@ -32,25 +39,35 @@ router.post('/register', (req, res, next) => {
 router.post('/authenticate', (req, res) => {
   const { username, password } = req.body;
 
-  User.findOne({username}, (err, user) => {
-    if (err)
+  User.findOne({username}, (err, user) => { //kullanıcıyı arıyoruz.
+
+    if (err)// hata oluşursa hatayı fırlatıyoruz..
       throw err;
-    if (!user){
-      res.json({
-        status: false,
-        message: 'Authentication failed, user is not found.',
-      });
-    }else{
+
+    if (!user){ //böyle bir kullanıcı yoksa hata dönderiyoruz.
+
+      res.json(jsonMessage('false', 'Authentication failed, user is not found.'));
+
+    }else{// kullanıcı varsa şifresini karşılaştırıyoruz.
+
       bcrypt.compare(password, user.password).then((result) => {
-        if (!result){
-          res.json({
-            status: false,
-            message: 'Authentication failed, wrong password',
-          });
-        }else{
+
+        if (!result){//gelen sonuç şifre ile eşleşmiyorsa hata dönderiyoruz.
+
+          res.json(jsonMessage('false', 'Authentication failed, wrong password'));
+        
+        }else{// kullanıcı şifresi uyuyşuyor ise token oluşturuyoruz.
+
+          //payload ile tokenin kullanıcıya ait hangi bilgileri taşıyacağını belirtiyoruz.
+          const payload = { username };
+          //jwt modülünü kullanarak token oluşturuyoruz. expiresIn ile 12 saat tokenin geçerli olmasını sağladık.
+          const token = jwt.sign(payload, req.app.get('api_secret_key'), { expiresIn: 720 });
+          res.json(jsonMessage('true', token));
 
         }
+
       });
+
     } 
   });
 });
