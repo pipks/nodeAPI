@@ -7,16 +7,12 @@ const jwt = require('jsonwebtoken');
 //Models
 const User = require('../models/User');
 
+
+
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
-
-//json function
-
-function jsonMessage(status, message){
-  return {status,message};
-};
 
 /* GET home page. */
 router.post('/register', (req, res, next) => {
@@ -46,7 +42,10 @@ router.post('/authenticate', (req, res) => {
 
     if (!user){ //böyle bir kullanıcı yoksa hata dönderiyoruz.
 
-      res.json(jsonMessage('false', 'Authentication failed, user is not found.'));
+      res.json({
+        status: false,
+        message: 'Authentication failed, user is not found'
+      });
 
     }else{// kullanıcı varsa şifresini karşılaştırıyoruz.
 
@@ -54,7 +53,10 @@ router.post('/authenticate', (req, res) => {
 
         if (!result){//gelen sonuç şifre ile eşleşmiyorsa hata dönderiyoruz.
 
-          res.json(jsonMessage('false', 'Authentication failed, wrong password'));
+          res.json({
+            status: false, 
+            message: 'Authentication failed, wrong password'
+          });
         
         }else{// kullanıcı şifresi uyuyşuyor ise token oluşturuyoruz.
 
@@ -62,7 +64,10 @@ router.post('/authenticate', (req, res) => {
           const payload = { username };
           //jwt modülünü kullanarak token oluşturuyoruz. expiresIn ile 12 saat tokenin geçerli olmasını sağladık.
           const token = jwt.sign(payload, req.app.get('api_secret_key'), { expiresIn: 720 });
-          res.json(jsonMessage('true', token));
+          res.json({
+            status: true,
+            token
+          });
 
         }
 
