@@ -93,7 +93,7 @@ router.get('/:director_id', (req, res) => {
 
 //director updates
 router.put('/:director_id', (req, res, next) => {
-    const promise = Movie.findByIdAndUpdate(
+    const promise = Director.findByIdAndUpdate(
         req.params.director_id, 
         req.body,
         { //kayıt sonrasında dönen datanın yeni data olmasını sağladık
@@ -108,23 +108,17 @@ router.put('/:director_id', (req, res, next) => {
       res.json(err);
     });
   });
-
 
   //director delete
-router.put('/:director_id', (req, res, next) => {
-    const promise = Movie.findByIdAndRemove(
-        req.params.director_id, 
-        req.body,
-        { //kayıt sonrasında dönen datanın yeni data olmasını sağladık
-          new: true
-        }
-      );
-    promise.then((data) => {
-      if(!data)
-        next({ message : 'The director was not found.' })
-      res.json(data);
-    }).catch((err) => {
-      res.json(err);
-    });
+//delete movie
+router.delete('/:director_id', (req, res, next) => {
+  const promise = Director.findByIdAndRemove(req.params.director_id);
+  promise.then((data) => {
+    if(!data)
+      next({ message : 'The movie was not found.' })
+    res.json(data);
+  }).catch((err) => {
+    res.json(err);
   });
+});
   module.exports = router;
