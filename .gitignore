@@ -61,4 +61,4 @@ typings/
 .next
 
 #db ignore
-helper/db.js
+#helper/db.js
