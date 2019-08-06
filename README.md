@@ -1,4 +1,4 @@
-
+[![Build Status](https://api.travis-ci.org/pipks/nodeAPI.svg)](https://travis-ci.org/pipks/nodeAPI/)
 # Movies
 
 | Route | HTTP Verb	 | POST body	 | Description	 |
